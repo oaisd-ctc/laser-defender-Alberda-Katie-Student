@@ -5,6 +5,13 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     [SerializeField] int health = 50;
+    [SerializeField] ParticleSystem hitEffect;
+    [SerializeField] bool applyCameraShake;
+    CameraShake cameraShake;
+    void Awake()
+    {
+        cameraShake = Camera.main.GetComponent<CameraShake>();
+    }
 
     void OnTriggerEnter2D(Collider2D other) 
     {
@@ -13,6 +20,8 @@ public class Health : MonoBehaviour
         if(damageDealer != null)
         {
             TakeDamage(damageDealer.GetDamage());
+            PlayHitEffect();
+            ShakeCamera();
             damageDealer.Hit();
         }
     }
@@ -23,6 +32,21 @@ public class Health : MonoBehaviour
         if(health <=0)
         {
             Destroy(gameObject);
+        }
+    }
+    void PlayHitEffect()
+    {
+        if(hitEffect != null)
+        {
+            ParticleSystem instace = Instantiate(hitEffect, transform.position, Quaternion.identity);
+            Destroy(instace.gameObject, instace.main.duration + instace.main.startLifetime.constantMax);
+        }
+    }
+    void ShakeCamera()
+    {
+        if(cameraShake != null && applyCameraShake)
+        {
+            cameraShake.Play();
         }
     }
         
